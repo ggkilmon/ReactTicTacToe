@@ -6,9 +6,9 @@ import * as Constants from './constants'
 
 function Square(props){
     return (
-    <button className="square" onClick={props.onClick}>
-        {props.value}
-    </button>
+        <button className="square" onClick={props.onClick}>
+            {props.value}
+        </button>
     );
 }
   
@@ -22,25 +22,30 @@ class Board extends React.Component {
         );
     }
 
-    render() {
+    renderBoardRow(squares){
         return (
-        <div>
             <div className="board-row">
-                {this.renderSquare(0)}
-                {this.renderSquare(1)}
-                {this.renderSquare(2)}
+                {squares}
             </div>
-            <div className="board-row">
-                {this.renderSquare(3)}
-                {this.renderSquare(4)}
-                {this.renderSquare(5)}
+        );
+    }
+
+    render() {
+        let items = [];
+        let rows = [];
+        let count = 0;
+        for (let j = 0; j < 3; j++){
+            for (let i = 0; i < 3; i++){
+                items.push(this.renderSquare(count++));
+            }
+            rows.push(this.renderBoardRow(items));
+            items = [];
+        }
+        
+        return (
+            <div>
+                {rows}
             </div>
-            <div className="board-row">
-                {this.renderSquare(6)}
-                {this.renderSquare(7)}
-                {this.renderSquare(8)}
-            </div>
-        </div>
         );
     }
 }
@@ -106,18 +111,18 @@ class Game extends React.Component {
         }
 
         return (
-        <div className="game">
-            <div className="game-board">
-                <Board 
-                    squares={current.squares}
-                    onClick={(i) => this.handleClick(i)}
-                />
+            <div className="game">
+                <div className="game-board">
+                    <Board 
+                        squares={current.squares}
+                        onClick={(i) => this.handleClick(i)}
+                    />
+                </div>
+                <div className="game-info">
+                    <div>{status}</div>
+                    <ol>{moves}</ol>
+                </div>
             </div>
-            <div className="game-info">
-                <div>{status}</div>
-                <ol>{moves}</ol>
-            </div>
-        </div>
         );
     }
 }
