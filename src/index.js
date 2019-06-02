@@ -64,7 +64,7 @@ class Game extends React.Component {
         if (calculateWinner(squares) || squares[i]){
             return;
         }
-        squares[i] = this.state.xIsNext ? 'X' : 'O'; //fix this and in render
+        squares[i] = getNext(this.state.xIsNext);
         this.setState({
             history: history.concat([{
                 squares: squares,
@@ -102,7 +102,7 @@ class Game extends React.Component {
         if (winner){
             status = Constants.MSG_WINNER.replace("$winner", winner);
         }else{
-            status = Constants.MSG_NEXT.replace("$player", (this.state.xIsNext ? 'X' : 'O'));// 'Next player: ' + (this.state.xIsNext ? 'X' : 'O');
+            status = Constants.MSG_NEXT.replace("$player", getNext(this.state.xIsNext));
         }
 
         return (
@@ -149,4 +149,8 @@ function calculateWinner(squares){
     }
 
     return null;
+}
+
+function getNext(isX){
+    return isX ? 'X' : 'O';
 }
