@@ -93,7 +93,8 @@ class Game extends React.Component {
     render() {
         const history = this.state.history;
         const selectedHistory = this.state.selectedHistory;
-        const current = history[this.state.stepNumber];
+        const step = this.state.stepNumber;
+        const current = history[step];
         const winner = calculateWinner(current.squares);
 
         const moves = history.map((step, move) => {
@@ -114,7 +115,11 @@ class Game extends React.Component {
         if (winner){
             status = Constants.MSG_WINNER.replace("$winner", winner);
         }else{
-            status = Constants.MSG_NEXT.replace("$player", getNext(this.state.xIsNext));
+            if (step === 9){
+                status = Constants.MSG_DRAW;
+            }else{
+                status = Constants.MSG_NEXT.replace("$player", getNext(this.state.xIsNext));
+            }
         }
 
         return (
