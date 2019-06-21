@@ -32,7 +32,7 @@ class Board extends React.Component {
         );
     }
 
-    render() {
+    generateRows(){
         let items = [];
         let rows = [];
         let count = 0;
@@ -43,6 +43,12 @@ class Board extends React.Component {
             rows.push(this.renderBoardRow(items, j + 1));
             items = [];
         }
+
+        return rows;
+    }
+
+    render() {
+        let rows = this.generateRows();
 
         return (
             <div>
@@ -94,42 +100,33 @@ class Game extends React.Component {
         });
     }
 
+    renderHistory(history, selectedHistory, move){
+        const historySquare = move > 0 ? history[move].squares[history[move].lastMove] : "";
+        const desc = move ?
+            Constants.MSG_GOTO
+                .replace("$place", "move #" + move)
+                .replace("$player", historySquare.value)
+                .replace("$row", historySquare.row + 1)
+                .replace("$column", historySquare.column + 1) :
+            Constants.MSG_GAMESTART;
+        
+        const buttonClass = selectedHistory === move ? "boldButton" : "normalButton";
+        
+        return (
+            <li key={move}>
+                <button onClick={() => this.jumpTo(move)} className={buttonClass}>{desc}</button>
+            </li>
+        );
+    }
+
     render() {
         const history = this.state.history;
         const selectedHistory = this.state.selectedHistory;
         const step = this.state.stepNumber;
         const current = history[step];
         const winner = calculateWinner(current.squares);
-
-        const moves = history.map((step, move) => {
-            const historySquare = move > 0 ? history[move].squares[history[move].lastMove] : "";
-            const desc = move ?
-                Constants.MSG_GOTO
-                    .replace("$place", "move #" + move)
-                    .replace("$player", historySquare.value)
-                    .replace("$row", historySquare.row + 1)
-                    .replace("$column", historySquare.column + 1) :
-                Constants.MSG_GAMESTART;
-            
-            const buttonClass = selectedHistory === move ? "boldButton" : "normalButton";
-            
-            return (
-                <li key={move}>
-                    <button onClick={() => this.jumpTo(move)} className={buttonClass}>{desc}</button>
-                </li>
-            );
-        });
-
-        let status;
-        if (winner){
-            status = Constants.MSG_WINNER.replace("$winner", winner);
-        }else{
-            if (step === 9){
-                status = Constants.MSG_DRAW;
-            }else{
-                status = Constants.MSG_NEXT.replace("$player", getNext(this.state.xIsNext, 0, 0).value);
-            }
-        }
+        const moves = history.map((step, move) => { return this.renderHistory(history, selectedHistory, move); });
+        let status = getStatus(step, winner, this.state.xIsNext);
 
         return (
             <div className="game">
@@ -196,4 +193,19 @@ function getNext(isX, row, column){
             column: column
         };
     return isX ? x : o;
+}
+
+function getStatus(step, winner, xIsNext){
+    let status;
+    if (winner){
+        status = Constants.MSG_WINNER.replace("$winner", winner);
+    }else{
+        if (step === 9){
+            status = Constants.MSG_DRAW;
+        }else{
+            status = Constants.MSG_NEXT.replace("$player", getNext(xIsNext, 0, 0).value);
+        }
+    }
+
+    return status;
 }
