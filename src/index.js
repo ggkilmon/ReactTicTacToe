@@ -6,7 +6,7 @@ import * as Constants from './constants'
 
 function Square(props){
     return (
-        <button className="square" onClick={props.onClick}>
+        <button className={props.className} onClick={props.onClick}>
             {props.value}
         </button>
     );
@@ -14,11 +14,18 @@ function Square(props){
   
 class Board extends React.Component {
     renderSquare(i, row, column) {
+        let className = "square";
+        let line = this.props.winningLine;
+        if (line && line.includes(i)){
+            className += " winner";
+        }
+
         return (
             <Square 
                 key={i}
                 value={this.props.squares[i] ? this.props.squares[i].value : ''} 
                 onClick={() => this.props.onClick(i, row, column)}
+                className={className}
             />
         );
     }
@@ -140,6 +147,10 @@ class Game extends React.Component {
             moves = moves.reverse();
             sortHistoryDesc = Constants.MSG_SORT.replace("$direction", "Ascending");
         }
+        let winningLines = null;
+        if (winner){
+            winningLines = winner.line;
+        }
 
         return (
             <div className="game">
@@ -151,6 +162,7 @@ class Game extends React.Component {
                     </div>
                     <Board 
                         squares={current.squares}
+                        winningLine={winningLines}
                         onClick={(i, row, column) => this.handleClick(i, row, column)}
                     />
                 </div>
@@ -186,7 +198,10 @@ function calculateWinner(squares){
     for (let i = 0; i < lines.length; i++){
         const [a, b, c] = lines[i];
         if (squares[a] && squares[b] && squares[c] && squares[a].value === squares[b].value && squares[a].value === squares[c].value){
-            return squares[a].value;
+            return {
+                "winner": squares[a].value,
+                "line" : lines[i],
+            };
         }
     }
 
@@ -212,7 +227,7 @@ function getNext(isX, row, column){
 function getStatus(step, winner, xIsNext){
     let status;
     if (winner){
-        status = Constants.MSG_WINNER.replace("$winner", winner);
+        status = Constants.MSG_WINNER.replace("$winner", winner.winner);
     }else{
         if (step === 9){
             status = Constants.MSG_DRAW;

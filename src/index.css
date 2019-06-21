@@ -32,6 +32,10 @@ ol, ul {
     width: 34px;
 }
 
+.winner {
+    background: #ffff00;
+}
+
 .rowLabel{
     float: left;
     margin-right: 5px;
