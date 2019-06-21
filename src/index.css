@@ -32,6 +32,16 @@ ol, ul {
     width: 34px;
 }
 
+.rowLabel{
+    float: left;
+    margin-right: 5px;
+    margin-top: 5px;
+}
+
+.columnLabel span{
+    margin-left: 26px;
+}
+
 .square:focus {
     outline: none;
 }
